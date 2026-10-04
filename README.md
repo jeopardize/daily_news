@@ -6,7 +6,7 @@
 
 - 📄 **论文抓取**：按 arXiv 分类（cs.DC / cs.LG / cs.AR 等）+ 关键词过滤，**综述（survey/review/overview）永远排在最前**
 - 📰 **新闻抓取**：RSS 源可自行增删，只保留最近 24h 内的内容
-- 🤖 **LLM 中文摘要**：OpenAI 兼容接口（官方 API / 中转站均可），失败自动降级为原文截取
+- 🤖 **LLM 中文摘要**：仅用于**新闻**；**论文直接完整返回 arXiv 原文摘要**（不二次概括），消息内附全部链接
 - 📲 **企业微信推送**：支持两种方式——管理后台「智能机器人」**长连接模式**（无需公网 URL）或群机器人 webhook，一条消息含全部内容，所有条目可点击跳转
 - ⏰ **频率/数量可调**：全部集中在 `config.yaml`，改完重启服务即生效
 
@@ -51,7 +51,7 @@ wecom:
 
 llm:
   base_url: "https://api.openai.com/v1"
-  api_key: "填你的API_KEY"
+  api_key: "填你的API_KEY"   # 只用于新闻摘要；不填则新闻也显示原文（含 HTML 已清洗）
   model: "gpt-4o-mini"
 
 news:

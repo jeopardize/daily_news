@@ -29,10 +29,12 @@ async def run_daily(cfg: dict, bot: WecomBot | None = None):
     news = await asyncio.to_thread(collect_news, cfg)
     log.info("抓取完成: %d 篇论文, %d 条新闻", len(papers), len(news))
 
-    items = await summarize_items(cfg, papers + news) if (papers or news) else []
-    papers_llm = [it for it in items if it["type"] == "paper"]
-    news_llm = [it for it in items if it["type"] == "news"]
-    content = build_markdown(news_llm, papers_llm)
+    # 论文：完整返回原文摘要，不走 LLM
+    for p in papers:
+        p.setdefault("llm_summary", p["summary"])
+    # 新闻：LLM 中文摘要（key 未配置时兜底为清洗后的原文）
+    news_llm = await summarize_items(cfg, news) if news else []
+    content = build_markdown(news_llm, papers)
 
     wecom = cfg.get("wecom", {})
     mode = wecom.get("mode", "webhook")

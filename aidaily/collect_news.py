@@ -1,4 +1,6 @@
 """从 RSS 源抓取 AI Infra 相关新闻。"""
+import html
+import re
 import time
 import logging
 from datetime import datetime, timedelta, timezone
@@ -9,6 +11,15 @@ import requests
 log = logging.getLogger(__name__)
 
 UA = "Mozilla/5.0 (compatible; AIDaily/1.0)"
+_TAG_RE = re.compile(r"<[^>]+>")
+_BLOCK_RE = re.compile(r"(?is)<(script|style)[^>]*>.*?</\1>")
+
+
+def strip_html(s: str) -> str:
+    s = _BLOCK_RE.sub(" ", s)
+    s = html.unescape(s)
+    s = _TAG_RE.sub(" ", s)
+    return re.sub(r"\s+", " ", s).strip()
 
 
 def collect_news(cfg: dict) -> list[dict]:
@@ -32,7 +43,7 @@ def collect_news(cfg: dict) -> list[dict]:
                     "source": name,
                     "title": e.get("title", "").strip(),
                     "link": e.get("link", ""),
-                    "summary": (e.get("summary") or "")[:1500],
+                    "summary": strip_html(e.get("summary") or "")[:1500],
                     "published": pub_dt.isoformat() if pub_dt else None,
                     "datetime": pub_dt,
                 })

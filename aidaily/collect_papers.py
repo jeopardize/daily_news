@@ -45,7 +45,7 @@ def collect_papers(cfg: dict) -> list[dict]:
             "type": "paper",
             "title": r.title.replace("\n", " ").strip(),
             "link": r.get_short_id() and f"https://arxiv.org/abs/{r.get_short_id().split('v')[0]}",
-            "summary": (r.summary or "").replace("\n", " ")[:2000],
+            "summary": (r.summary or "").replace("\n", " ")[:5000],
             "authors": ", ".join(a.name for a in r.authors[:4]),
             "is_survey": is_survey,
             "datetime": r.published.replace(tzinfo=timezone.utc) if r.published else None,
