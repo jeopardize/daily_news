@@ -88,6 +88,9 @@ class WecomBot:
         cmd = frame.get("cmd", "")
         req_id = frame.get("headers", {}).get("req_id")
         if cmd.endswith("_callback"):
+            log.info("收到帧: cmd=%s body=%s", cmd,
+                     json.dumps(frame.get("body", {}), ensure_ascii=False)[:500])
+        if cmd.endswith("_callback"):
             body = frame.get("body", {})
             chatid, chattype = body.get("chatid"), body.get("chattype")
             if chattype == "group" and chatid:

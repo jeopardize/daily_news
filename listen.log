@@ -1,0 +1,11 @@
+2026-10-04 21:31:25,912 INFO aidaily.wecom_ws: 企业微信长连接订阅成功
+2026-10-04 21:31:55,969 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
+2026-10-04 21:32:25,969 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
+2026-10-04 21:32:51,797 INFO aidaily.wecom_ws: 收到帧: cmd=aibot_msg_callback body={"msgid": "d32840884acfff0ca47992a3e363ff64", "aibotid": "aib9DQAR2ALe2d7v9APZu_VM2d8C2A1NEcO", "chatid": "wr-nM0cgAA383lpzjIhF5ZRIR08SGmLQ", "chattype": "group", "from": {"userid": "WangJingXin"}, "msgtype": "text", "response_url": "https://qyapi.weixin.qq.com/cgi-bin/aibot/response?response_code=s8ceOZOrRtSmTRxfvbFKJQAA_MufAg5rEbbJoNmtFJanZxgQLbKKsr8Emz1TJxRT6jcBAnTxbtgpy_tkBqlNtyg-C", "text": {"content": "@news 你好"}}
+2026-10-04 21:32:51,798 INFO aidaily.wecom_ws: 已记录群 chatid: wr-nM0cgAA383lpzjIhF5ZRIR08SGmLQ
+2026-10-04 21:32:55,975 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
+2026-10-04 21:33:25,976 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
+2026-10-04 21:33:45,595 INFO aidaily.wecom_ws: 收到帧: cmd=aibot_event_callback body={"msgid": "78ef834d3d48c70c4f37cdcb061f2393", "aibotid": "aib9DQAR2ALe2d7v9APZu_VM2d8C2A1NEcO", "msgtype": "event", "create_time": 1791120825, "event": {"eventtype": "disconnected_event"}}
+2026-10-04 21:33:56,022 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
+2026-10-04 21:34:25,976 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
+2026-10-04 21:34:55,984 INFO aidaily.wecom_ws: 收到帧: cmd=(response) body={}
