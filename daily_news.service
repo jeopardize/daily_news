@@ -1,0 +1,14 @@
+[Unit]
+Description=AI Infra Daily WeChat Push
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/daily_news
+ExecStart=/opt/daily_news/venv/bin/python main.py run
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,66 @@
+# ========= AI Infra 每日推送配置 =========
+
+# 推送控制
+push:
+  # 每天推送时间（cron 风格），支持多个时间点
+  # 语法: "分 时 * * *" 例如 "30 8 * * *" = 每天 8:30
+  schedule:
+    - "30 8 * * *"    # 每天早上 8:30
+    # - "0 20 * * *"  # 需要一天两次时取消注释
+
+  # 服务器时区（部署到阿里云一般为 Asia/Shanghai）
+  timezone: "Asia/Shanghai"
+
+# 企业微信群机器人 webhook（填入你自己的 token）
+wechat_webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=你的机器人key"
+
+# LLM 摘要配置（OpenAI 兼容接口）
+llm:
+  base_url: "https://api.openai.com/v1"   # 若用中转/代理改成对应地址
+  api_key: "你的API_KEY"
+  model: "gpt-4o-mini"
+  # 并发与超时
+  max_concurrency: 5
+  timeout: 60
+  # 中文摘要最大字数
+  max_words: 300
+
+# 新闻抓取
+news:
+  # 来源 RSS 列表（可自行增删）
+  sources:
+    - name: "Hacker News"
+      url: "https://hnrss.org/newest?q=AI"
+    - name: "VentureBeat AI"
+      url: "https://venturebeat.com/feed/"
+  # 每天最多推送多少条新闻
+  max_count: 5
+  # 只抓最近多少小时内的新闻
+  lookback_hours: 24
+
+# 论文抓取（arXiv）
+papers:
+  # arXiv 分类，AI Infra 相关主要在 cs.DC / cs.LG / cs.Distributed 等
+  categories:
+    - "cs.DC"
+    - "cs.LG"
+    - "cs.AR"
+  # 关键词，任一命中即算 AI Infra 相关
+  keywords:
+    - "LLM inference"
+    - "GPU cluster"
+    - "model serving"
+    - "distributed training"
+    - "KV cache"
+    - "vLLM"
+    - "tensor parallel"
+    - "data center"
+  # 优先级：综述(review/survey)优先；设为 true 后综述始终在前
+  prefer_survey: true
+  # 每天推送论文数量（后期在这里改）
+  max_count: 5
+  # 只抓最近多少天的论文（池子越大越容易捞到综述）
+  lookback_days: 7
+
+# 邮件用不到，可忽略
+_misc: {}
