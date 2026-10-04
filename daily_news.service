@@ -5,7 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+User=admin
 WorkingDirectory=/opt/daily_news
+EnvironmentFile=/opt/daily_news/.env
 ExecStart=/opt/daily_news/venv/bin/python main.py run
 Restart=always
 RestartSec=10

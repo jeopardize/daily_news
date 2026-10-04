@@ -40,8 +40,10 @@ news:
   sources:
     - name: "Hacker News"
       url: "https://hnrss.org/newest?q=AI"
-    - name: "VentureBeat AI"
-      url: "https://venturebeat.com/feed/"
+    - name: "机器之心"
+      url: "https://www.jiqizhixin.com/rss"
+    - name: "雷峰网"
+      url: "https://www.leiphone.com/feed"
   # 每天最多推送多少条新闻
   max_count: 5
   # 只抓最近多少小时内的新闻
