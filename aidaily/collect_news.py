@@ -21,7 +21,8 @@ def collect_news(cfg: dict) -> list[dict]:
     for src in sources:
         name, url = src.get("name"), src.get("url")
         try:
-            feed = feedparser.parse(url, request_headers={"User-Agent": UA})
+            resp = requests.get(url, timeout=20, headers={"User-Agent": UA})
+            feed = feedparser.parse(resp.content)
             for e in feed.entries:
                 published = e.get("published_parsed") or e.get("updated_parsed")
                 pub_dt = datetime.fromtimestamp(time.mktime(published), tz=timezone.utc) \

@@ -157,6 +157,8 @@ class WecomBot:
 
 async def push_standalone(bot_id: str, secret: str, content: str, chatid: str) -> None:
     """一次性短连接推送（用于 once 模式调试）。"""
+    if not chatid:
+        raise RuntimeError("缺少 chatid：请先在群里 @机器人 发一条消息，或在 config 写入 chatid")
     async with websockets.connect(WSS_URL, ping_interval=None) as ws:
         req_id = uuid.uuid4().hex
         await ws.send(json.dumps({
