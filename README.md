@@ -7,16 +7,24 @@
 - 📄 **论文抓取**：按 arXiv 分类（cs.DC / cs.LG / cs.AR 等）+ 关键词过滤，**综述（survey/review/overview）永远排在最前**
 - 📰 **新闻抓取**：RSS 源可自行增删，只保留最近 24h 内的内容
 - 🤖 **LLM 中文摘要**：OpenAI 兼容接口（官方 API / 中转站均可），失败自动降级为原文截取
-- 📲 **企业微信推送**：群机器人 webhook，一条消息含全部内容，所有条目可点击跳转
+- 📲 **企业微信推送**：支持两种方式——管理后台「智能机器人」**长连接模式**（无需公网 URL）或群机器人 webhook，一条消息含全部内容，所有条目可点击跳转
 - ⏰ **频率/数量可调**：全部集中在 `config.yaml`，改完重启服务即生效
 
 ## 快速开始
 
-### 1. 准备企业微信机器人
+### 1. 准备企业微信推送（二选一）
 
-1. 在企业微信里建一个群（或用现有群）
-2. 群设置 → **群机器人** → **添加机器人**，复制 webhook 地址
-3. 地址形如 `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxx`
+**方式 A：智能机器人 + 长连接（推荐）**
+
+1. 登录 [企业微信管理后台](https://work.weixin.qq.com) → 管理工具 → **智能机器人** → 创建机器人
+2. 创建页面底部选择 **API 模式创建**，连接方式选 **长连接**
+3. 记下 **Bot ID** 和 **Secret**
+4. 保存后，把机器人**添加到企业微信内部群**，并在群里 **@机器人 随便发一条消息**（首次必须，否则服务端不会下发群 chatid，无法主动推送）
+
+**方式 B：群机器人 webhook**
+
+1. 在企业微信群里：群设置 → 群机器人 → 添加机器人
+2. 复制形如 `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxx` 的地址
 
 > 手机微信里关注“企业微信插件”即可在微信内收到群消息。
 
@@ -34,7 +42,12 @@ push:
     - "30 8 * * *"        # 每天早上 8:30 推送，cron 表达式，可加多个
   timezone: "Asia/Shanghai"
 
-wechat_webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=填你的key"
+wecom:
+  mode: "bot"             # bot=长连接模式 / webhook=群机器人模式
+  bot_id: "填BotID"       # 方式A
+  secret: "填Secret"      # 方式A
+  chatid: ""              # 方式A：留空自动记录（需先@机器人一次）
+  webhook: ""             # 方式B
 
 llm:
   base_url: "https://api.openai.com/v1"
@@ -64,7 +77,8 @@ python3 -m venv venv
 ./venv/bin/python main.py once
 ```
 
-看到 `推送成功 ✅` 即配置正确，微信群里应已收到消息。
+看到 `推送成功` 即配置正确，微信群里应已收到消息。
+（长连接模式下若提示"尚未获取 chatid"，先在群里 @机器人 发一条消息再重试。）
 
 ## 部署到 Linux 服务器（systemd 常驻）
 
@@ -95,15 +109,21 @@ journalctl -u daily_news -f
 
 ## 敏感信息替代方案（推荐生产使用）
 
-不在 `config.yaml` 里写 key，改用环境变量（优先级更高）：
+不在 `config.yaml` 里写 key，改用 `.env` 文件或环境变量（优先级更高，配置加载器会自动读取项目根目录的 `.env`）：
 
 ```bash
-export WECHAT_WEBHOOK="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"
-export OPENAI_API_KEY="sk-xxx"
-export OPENAI_BASE_URL="https://api.openai.com/v1"   # 可选
+# .env 示例（已被 .gitignore 忽略，不会提交）
+WECOM_BOT_ID=xxx
+WECOM_BOT_SECRET=xxx
+OPENAI_API_KEY=sk-xxx
+OPENAI_BASE_URL=https://api.openai.com/v1
 ```
 
-在 `daily_news.service` 的 `[Service]` 段加一行 `EnvironmentFile=/opt/daily_news/.env`，key 全部写在服务器上的 `.env` 文件（不要提交到 git）。
+```bash
+export WECHAT_WEBHOOK="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"  # webhook 模式
+export WECOM_BOT_ID="xxx"      # 长连接模式
+export WECOM_BOT_SECRET="xxx"
+```
 
 ## 常用调整速查
 
@@ -123,14 +143,15 @@ export OPENAI_BASE_URL="https://api.openai.com/v1"   # 可选
 
 ```
 daily_news/
-├── main.py               # 入口：once=立即跑一次 / run=常驻定时
+├── main.py               # 入口：once=立即跑一次 / listen=长连接监听 / run=常驻定时
 ├── config.yaml           # 所有可调参数
 ├── daily_news.service    # systemd 服务文件
 ├── requirements.txt
 └── aidaily/
-    ├── config.py         # 配置加载，支持环境变量覆盖
+    ├── config.py         # 配置加载，支持 .env / 环境变量覆盖
     ├── collect_news.py   # RSS 新闻抓取
     ├── collect_papers.py # arXiv 论文抓取（综述优先）
     ├── summarize.py      # LLM 中文摘要（异步并发）
-    └── notify.py         # 企业微信推送
+    ├── notify.py         # 日报 markdown 构建 + webhook 推送
+    └── wecom_ws.py       # 企业微信智能机器人长连接客户端
 ```

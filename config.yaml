@@ -11,8 +11,17 @@ push:
   # 服务器时区（部署到阿里云一般为 Asia/Shanghai）
   timezone: "Asia/Shanghai"
 
-# 企业微信群机器人 webhook（填入你自己的 token）
-wechat_webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=你的机器人key"
+# 企业微信推送配置
+wecom:
+  # bot = 智能机器人长连接模式；webhook = 群机器人 webhook 模式
+  mode: "bot"
+  # --- 长连接模式（推荐，管理后台-管理工具-智能机器人 创建）---
+  bot_id: "填BotID"
+  secret: "填Secret"
+  # 群 chatid：留空则自动记录（需先在群里 @机器人 发一条消息）
+  chatid: ""
+  # --- webhook 模式（在群里添加群机器人获得）---
+  webhook: ""
 
 # LLM 摘要配置（OpenAI 兼容接口）
 llm:
